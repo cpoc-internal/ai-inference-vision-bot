@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  vllm:
+    image: vllm/vllm-openai:latest
+    container_name: vllm_engine
+    network_mode: host
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    volumes:
+      - ~/.cache/huggingface:/root/.cache/huggingface
+    # Using LLaVA for Vision support as discussed
+    command: 
+      --model llava-hf/llava-1.5-7b-hf 
+      --gpu-memory-utilization 0.8 
+      --max-model-len 4096 
+      --tensor-parallel-size 8
+
+  chatbot:
+    build: .
+    container_name: streamlit_app
+    network_mode: host
+    depends_on:
+      - vllm
+    volumes:
+      - .:/app
+      - ./app_data.db:/app/app_data.db
+      - ./chroma_db:/app/chroma_db
+    environment:
+      - VLLM_URL=http://localhost:8000/v1

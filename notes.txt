@@ -1,0 +1,54 @@
+running via docker
+apt  install docker-compose -y
+apt  install docker.io -y
+
+curl -fsSL https://nvidia.github.io/libnvidia-container/gpgkey | sudo gpg --dearmor -o /usr/share/keyrings/nvidia-container-toolkit-keyring.gpg \
+  && curl -s -L https://nvidia.github.io/libnvidia-container/stable/deb/nvidia-container-toolkit.list | \
+    sed 's#deb https://#deb [signed-by=/usr/share/keyrings/nvidia-container-toolkit-keyring.gpg] https://#g' | \
+    sudo tee /etc/list.d/nvidia-container-toolkit.list
+
+# Install the toolkit
+sudo apt-get update
+sudo apt-get install -y nvidia-container-toolkit
+
+sudo nvidia-ctk runtime configure --runtime=docker
+
+sudo systemctl restart docker
+
+docker run --rm --gpus all nvidia/cuda:12.9-base nvidia-smi
+
+pip install -r requirements.txt
+
+pip install "docker<7.0.0"
+
+docker-compose up --build
+
+running local
+
+python3 -m vllm.entrypoints.openai.api_server \
+  --model llava-hf/llava-1.5-7b-hf \
+  --dtype auto \
+  --api-key EMPTY \
+  --tensor-parallel-size 8
+
+create a docker container
+
+sudo docker run -d --name vllm-server \
+    --gpus all \
+    -p 8000:8000 \
+    -v ~/.cache/huggingface:/root/.cache/huggingface \
+    --env "HUGGING_FACE_HUB_TOKEN=your_token_here" \
+    vllm/vllm-openai:latest \
+    --tensor-parallel-size 8 \
+    --model llava-hf/llava-1.5-7b-hf
+
+streamlit run app.py
+
+
+kill all data from gpus 
+nvidia-smi --query-compute-apps=pid --format=csv,noheader | xargs -i kill -9 {}
+
+docker-compose up --remove-orphans
+
+docker-compose stop
+docker-compose down
