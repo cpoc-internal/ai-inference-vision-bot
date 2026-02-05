@@ -60,10 +60,17 @@ with st.sidebar:
     docs = st.file_uploader("Add to Knowledge Base", type=["pdf", "docx"], accept_multiple_files=True, key=f"d_{st.session_state.doc_key}")
     if st.button("Process & Detach Docs", use_container_width=True):
         if docs:
-            with st.spinner("Indexing files..."):
+            with st.spinner("Indexing files and extracting images..."):
+                for doc_file in docs:
+                    if doc_file.name.endswith(".pdf"):
+                        # Reset seek and read bytes
+                        file_bytes = doc_file.getvalue()
+                        # Extract images
+                        imgs = rag.extract_pdf_images(file_bytes, st.session_state.user_id, st.session_state.current_session_id)
+                        st.session_state.extracted_imgs = imgs
+                
                 rag.process_files(docs, st.session_state.user_id)
                 st.session_state.doc_key += 1
-                st.success("Documents added!")
                 st.rerun()
 
     st.subheader("🖼️ Vision")
@@ -86,7 +93,20 @@ with st.sidebar:
         st.rerun()
 
 # --- 4. MAIN CHAT AREA ---
+
 curr_id = st.session_state.get("current_session_id")
+
+# At the top of the Main Screen area
+if "extracted_imgs" in st.session_state and st.session_state.extracted_imgs:
+    with st.expander("🖼️ View Images Found in PDF", expanded=False):
+        cols = st.columns(3) # Create a grid
+        for idx, img_path in enumerate(st.session_state.extracted_imgs):
+            with cols[idx % 3]:
+                st.image(img_path, use_container_width=True)
+                if st.button(f"Analyze Image {idx}", key=f"analyze_{idx}"):
+                    # Logic to set this image as the current 'img' for the vision model
+                    st.session_state.pending_image_path = img_path
+                    st.info(f"Image {idx} selected for analysis.")
 
 if curr_id:
     # Render main history

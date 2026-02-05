@@ -4,6 +4,8 @@ from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+import fitz  # PyMuPDF
+import os
 
 EMBED_MODEL = "all-MiniLM-L6-v2"
 
@@ -36,3 +38,29 @@ def get_context(prompt, user_id):
         docs = db.similarity_search(prompt, k=3)
         return "\n".join([d.page_content for d in docs])
     except: return ""
+
+
+
+def extract_pdf_images(file_bytes, user_id, session_id):
+    """Extracts images from PDF and returns a list of local paths."""
+    doc = fitz.open(stream=file_bytes, filetype="pdf")
+    image_paths = []
+    
+    # Create directory for this session's images
+    output_dir = f"./extracted_images/{user_id}/{session_id}"
+    os.makedirs(output_dir, exist_ok=True)
+
+    for page_index in range(len(doc)):
+        for img_index, img in enumerate(doc.get_page_images(page_index)):
+            xref = img[0]
+            base_image = doc.extract_image(xref)
+            image_bytes = base_image["image"]
+            ext = base_image["ext"]
+            
+            img_filename = f"pg{page_index}_img{img_index}.{ext}"
+            img_path = os.path.join(output_dir, img_filename)
+            
+            with open(img_path, "wb") as f:
+                f.write(image_bytes)
+            image_paths.append(img_path)
+    return image_paths

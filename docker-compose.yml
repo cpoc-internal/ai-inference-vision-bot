@@ -30,5 +30,6 @@ services:
       - .:/app
       - ./app_data.db:/app/app_data.db
       - ./chroma_db:/app/chroma_db
+      - ./extracted_images:/app/extracted_images
     environment:
       - VLLM_URL=http://localhost:8000/v1

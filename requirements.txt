@@ -17,3 +17,4 @@ gpustat
 matplotlib
 plotly
 docx2txt
+pymupdf
