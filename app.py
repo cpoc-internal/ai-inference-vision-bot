@@ -3,14 +3,55 @@ import database as db
 import rag_engine as rag
 import llm_client as ai
 import base64
+import re
+import os
+import pathlib
+from config.config import assets_path, img_path, clear_history
+from config.style import header
+import yaml
+
+with open("./config/config.yaml", "r") as f:
+    config_yaml = yaml.safe_load(f)
+css_path = pathlib.Path(f"{assets_path()}/style.css")
+css_path2 = pathlib.Path(f"{assets_path()}/fontawesome-free-6.7.2-web/css/all.min.css")
+js_path = pathlib.Path(f"{assets_path()}/jquery.js")
+
+
+# Function to load CSS from the 'assets' folder
+
+with open(css_path) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+with open(css_path2) as f:
+    st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
+with open(js_path) as f:
+    st.markdown(f"<script>{f.read()}</script>", unsafe_allow_html=True)
+st.markdown(
+    """
+<style>
+.stApp {
+    background-color: #f0f2f6; /* Replace with your desired color */
+}
+</style>
+""",
+    unsafe_allow_html=True,
+)
+
+
+def set_page_config():
+    st.set_page_config(
+        page_title="Concept-AI",
+        page_icon=f"{img_path()}/cpoc_logo.ico",  # You can also use a custom image path here
+    )
 
 # --- 1. INITIAL SETUP ---
-st.set_page_config(page_title="Multimodal AI RAG", layout="wide")
+set_page_config()
 db.init_db()
+
+# --- HEADER SECTION ---
+header()
 
 # --- 2. AUTHENTICATION UI ---
 if "user_id" not in st.session_state:
-    st.title("🔐 AI Multi-Tool Platform")
     
     # Restoring the Login/Register Tabs
     tab1, tab2 = st.tabs(["Login", "Register"])
@@ -44,7 +85,7 @@ if "user_id" not in st.session_state:
 
 # --- 3. SIDEBAR: NAVIGATION & TOOLS ---
 with st.sidebar:
-    st.title(f"👤 {st.session_state.username}")
+    st.subheader(f"👤 {st.session_state.username}")
     
     if st.button("➕ New Chat", use_container_width=True):
         st.session_state.current_session_id = db.create_session(st.session_state.user_id)
@@ -135,13 +176,30 @@ if curr_id:
             placeholder = st.empty()
             full_res = ""
             try:
+                avail_imgs = rag.get_session_image_names(st.session_state.user_id, curr_id)
+    
                 # Update URL/Model if needed for your local vLLM Docker container
-                stream = ai.get_vllm_response(prompt, context, img_b64, "http://localhost:8000/v1", "llava-hf/llava-1.5-7b-hf")
+                #Qwen/Qwen2.5-VL-7B-Instruct
+                stream = ai.get_vllm_response(prompt, context, img_b64,avail_imgs)
                 for chunk in stream:
                     if chunk.choices[0].delta.content:
                         full_res += chunk.choices[0].delta.content
                         placeholder.markdown(full_res + "▌")
-                placeholder.markdown(full_res)
+                img_match = re.search(r"\[SHOW_IMAGE:\s*(.*?)\]", full_res)
+
+                if img_match:
+                    img_name = img_match.group(1).strip()
+                    img_path = f"./extracted_images/{st.session_state.user_id}/{curr_id}/{img_name}"
+                    
+                    # Clean the text (remove the trigger tag) so it looks nice
+                    clean_res = full_res.replace(img_match.group(0), "")
+                    placeholder.markdown(clean_res)
+                    if os.path.exists(img_path):
+                        st.image(img_path, caption=f"Extracted Image: {img_name}")
+                    else:
+                        st.error(f"Could not find image: {img_name}")
+                else:
+                    placeholder.markdown(full_res)
                 
                 # 4. Persistence
                 db.save_message(curr_id, "user", prompt)

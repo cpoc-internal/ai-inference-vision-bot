@@ -1,0 +1,6 @@
+[theme]
+font = "CiscoSans" # Or "serif" or "monospace"
+backgroundColor = "#212529" # Example: orange background
+
+[server]
+    port = 8502

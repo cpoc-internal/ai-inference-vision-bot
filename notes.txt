@@ -52,3 +52,5 @@ docker-compose up --remove-orphans
 
 docker-compose stop
 docker-compose down
+
+rm -rf /root/.cache/huggingface

@@ -1,0 +1,15 @@
+
+
+EMBEDDING_MODEL_NAME: "all-MiniLM-L6-v2"
+PDF_PERSIST_DIRECTORY: "./services/pdf_db"
+HISTORY_DB_FILE: "./services/chat_history.db"
+USERS_DB_FILE: "./services/users_auth.db"
+
+chat_history_path: "./services/chat_sessions/"
+
+base_url: "http://localhost:8000/v1"
+vllm_url: "http://vllm:8000/v1"
+
+model_name: "RedHatAI/Ministral-3-14B-Instruct-2512"
+vision_model: "llava-hf/llava-1.5-7b-hf"
+vision_model2: "Qwen/Qwen3-VL-30B-A3B-Instruct"

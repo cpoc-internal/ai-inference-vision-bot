@@ -64,3 +64,9 @@ def extract_pdf_images(file_bytes, user_id, session_id):
                 f.write(image_bytes)
             image_paths.append(img_path)
     return image_paths
+
+def get_session_image_names(user_id, session_id):
+    path = f"./extracted_images/{user_id}/{session_id}"
+    if os.path.exists(path):
+        return os.listdir(path)
+    return []

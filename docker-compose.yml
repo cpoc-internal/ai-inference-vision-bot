@@ -15,9 +15,9 @@ services:
       - ~/.cache/huggingface:/root/.cache/huggingface
     # Using LLaVA for Vision support as discussed
     command: 
-      --model llava-hf/llava-1.5-7b-hf 
+      --model Qwen/Qwen3-VL-30B-A3B-Instruct
       --gpu-memory-utilization 0.8 
-      --max-model-len 4096 
+      --max-model-len 262144 
       --tensor-parallel-size 8
 
   chatbot:
