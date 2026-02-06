@@ -61,6 +61,7 @@ fi
 # Install Docker
 echo "Installing Docker..."
 sudo apt  install docker.io -y
+sudo apt  install docker-compose -y
 
 # Add the user named $(whoami) to the Docker Group
 if [ ! "$enable_rootless_docker" = "true" ]; then
