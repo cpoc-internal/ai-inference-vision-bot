@@ -26,7 +26,7 @@ echo "Starting the Private AI Quick Pre-Setup..."
 # Set Permissions for Accessible Private AI Setup Files
 echo "Setting Permissions for Accessible Private AI Setup Files..."
 script_directory="$(cd "$(dirname "${bash_source[0]}")" && pwd)"
-private_ai_files=("pre-install.sh" "chat-model-setup.sh" "chat-model-single-setup.sh" "chat-model-dual-setup.sh" "chat-model-3-setup.sh" "chat-model-3-model.sh" "image-model-setup.sh" "vision-model-setup.sh" "reasoning-model-setup.sh" "reasoning-model-setup-alt.sh" "open-webui-only-setup.sh")
+private_ai_files=("prep-server.sh")
 for private_ai_file in "${private_ai_files[@]}"; do
     target_file="$script_directory/$private_ai_file"
     [ -e "$target_file" ] && chmod a+x "$target_file"
@@ -61,6 +61,7 @@ fi
 # Install Docker
 echo "Installing Docker..."
 sudo apt  install docker.io -y
+
 sudo apt  install docker-compose -y
 
 # Add the user named $(whoami) to the Docker Group
@@ -126,13 +127,14 @@ sudo apt install nvtop -y
 echo "Installing Python 3 pip..."
 sudo apt-get install -y python3-pip
 
+sudo pip install "docker<7.0.0" 
 # Install Hugging Face Hub
 echo "Installing Hugging Face Hub..."
-sudo pip3 install huggingface_hub[hf_xet]
+sudo pip install huggingface_hub[hf_xet]
 
 # Install Hugging Face HF-Transfer
 echo "Installing Hugging Face HF-Transfer..."
-sudo pip3 install hf_transfer
+sudo pip install hf_transfer
 
 # Update PATH with Potential 'huggingface-cli' Directory
 echo "Updating PATH with Potential 'huggingface-cli' Directory..."
@@ -147,9 +149,3 @@ export HF_HUB_ENABLE_HF_TRANSFER=1
 
 EOF
 source ~/.bashrc
-# source .venv/bin/activate
-# End the Private AI Quick Pre-Setup and Reboot
-echo "The Private AI  Setup has Completed."
-#echo "The Server will Reboot in 5 Seconds..."
-#sleep 5
-#sudo reboot
