@@ -15,7 +15,7 @@ services:
     #   - ~/.cache/huggingface:/root/.cache/huggingface
     # Using LLaVA for Vision support as discussed
     command: 
-      --model RedHatAI/gemma-3-12b-it
+      --model RedHatAI/Llama-4-Scout-17B-16E-Instruct-FP8-dynamic
       --gpu-memory-utilization 0.8 
       --max-model-len 131072 
       --max-model-len 32768

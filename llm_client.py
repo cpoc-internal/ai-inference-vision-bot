@@ -25,7 +25,7 @@ def get_vllm_response(prompt, context, image_b64,available_images=None):
         })
     
     return client.chat.completions.create(
-        model=config_yaml["vision_model2"],
+        model=config_yaml["vision_model3"],
         messages=[{"role": "user", "content": content_list}],
         stream=True
     )
