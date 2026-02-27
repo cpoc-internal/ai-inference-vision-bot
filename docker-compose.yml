@@ -18,7 +18,7 @@ services:
       --model Qwen/Qwen3-VL-30B-A3B-Instruct
       --gpu-memory-utilization 0.8 
       --max-model-len 262144 
-      --tensor-parallel-size 8
+      --tensor-parallel-size 2
 
   chatbot:
     build: .
