@@ -12,4 +12,4 @@ vllm_url: "http://vllm:8000/v1"
 
 model_name: "RedHatAI/Ministral-3-14B-Instruct-2512"
 vision_model: "llava-hf/llava-1.5-7b-hf"
-vision_model2: "Qwen/Qwen3-VL-30B-A3B-Instruct"
+vision_model2: "RedHatAI/gemma-3-12b-it"
