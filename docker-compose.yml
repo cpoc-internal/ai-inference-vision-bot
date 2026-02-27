@@ -16,7 +16,7 @@ services:
     # Using LLaVA for Vision support as discussed
     command: 
       --model Qwen/Qwen3-VL-30B-A3B-Instruct
-      --gpu-memory-utilization 0.8 
+      --gpu-memory-utilization 0.4 
       --max-model-len 262144 
       --tensor-parallel-size 2
 
