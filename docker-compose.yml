@@ -11,12 +11,12 @@ services:
             - driver: nvidia
               count: all
               capabilities: [gpu]
-    volumes:
-      - ~/.cache/huggingface:/root/.cache/huggingface
+    # volumes:
+    #   - ~/.cache/huggingface:/root/.cache/huggingface
     # Using LLaVA for Vision support as discussed
     command: 
       --model Qwen/Qwen3-VL-30B-A3B-Instruct
-      --gpu-memory-utilization 0.4 
+      --gpu-memory-utilization 0.6 
       --max-model-len 262144 
       --tensor-parallel-size 2
 
