@@ -127,14 +127,14 @@ sudo apt install nvtop -y
 echo "Installing Python 3 pip..."
 sudo apt-get install -y python3-pip
 
-sudo pip install "docker<7.0.0" 
+sudo pip3 install "docker<7.0.0" 
 # Install Hugging Face Hub
 echo "Installing Hugging Face Hub..."
-sudo pip install huggingface_hub[hf_xet]
+sudo pip3 install huggingface_hub[hf_xet]
 
 # Install Hugging Face HF-Transfer
 echo "Installing Hugging Face HF-Transfer..."
-sudo pip install hf_transfer
+sudo pip3 install hf_transfer
 
 # Update PATH with Potential 'huggingface-cli' Directory
 echo "Updating PATH with Potential 'huggingface-cli' Directory..."
